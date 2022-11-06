@@ -1,14 +1,14 @@
 boolean isColliding(Circle circle, Circle otherCircle) {
-    Point other = otherCircle.center;
-    Point center = circle.center;
+    PVector other = otherCircle.location;
+    PVector location = circle.location;
     
-    return dist(center.x, center.y, other.x, other.y) < circle.rad + otherCircle.rad;
+    return location.dist(other) < circle.rad + otherCircle.rad;
 }
 
 Circle generateRandomCircle(int index, int thisCollidingCount,PeasyGradients p) {
     int radius = 20;
     
-    Point randomPoint = new Point(floor(random(width - radius * 2)), floor(random(height - radius * 2)));
+    PVector randomPoint = new PVector(floor(random(width - radius * 2)), floor(random(height - radius * 2)));
     Circle randomCircle = new Circle(randomPoint, radius, p);
     
     for (int i = 0; i < index; i ++) {

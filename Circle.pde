@@ -1,70 +1,73 @@
 
 class Circle{
     public PeasyGradients peasyGradients;
-    public Point center;
+    public PVector location;
+    // Vector dir;
     PGraphics ellipse, ellipseMask;
     int rad;
-    int xDirection = random( -1,1) > 0 ? 1 : - 1;
-    int yDirection = random( -1,1) > 0 ? 1 : - 1;
-    int speed = initialSpeed;
+    float xDirection = random( -1.00,1.00);
+    float yDirection = random( -1.00,1.00);
+    PVector velocity = new PVector(random( -initialSpeed, initialSpeed),random( -initialSpeed, initialSpeed));
+    PVector acceleration = new PVector(0, 0);
+    
     
     // constructor
-    Circle(Point cp,int radius,PeasyGradients p) {
-        center = cp;
+    Circle(PVector lc,int radius,PeasyGradients p) {
+        location = lc;
         rad = radius;
         peasyGradients = p;
         
         this.setup();
     }
     
-    void updateDirectionCollideWith(Circle otherCircle) {
-        Point other = otherCircle.center;
+    void checkCollisionWith(Circle otherCircle) {
+        PVector other = otherCircle.location;
         float distanceBetweenCircles = this.rad + otherCircle.rad;   
         boolean isColliding = isColliding(this,otherCircle);
         
         if (isColliding) {
             // isHorizontalColliding
-            if (abs(center.x - other.x) < distanceBetweenCircles) {
+            if (abs(location.x - other.x) < distanceBetweenCircles) {
                 //print("horizontal collide \n");
-                if (center.x - other.x > 0) {
-                    xDirection = 1;
-                    otherCircle.xDirection = -1;
-                    // speed ++;
+                if (location.x - other.x > 0) {
+                    velocity.x = abs(velocity.x);
+                    otherCircle.velocity.x = -abs(otherCircle.velocity.x);
                 } else{
-                    xDirection = -1;
-                    otherCircle.xDirection = 1;
-                    // otherCircle.speed -= 1;
+                    velocity.x = -abs(velocity.x);
+                    otherCircle.velocity.x = abs(otherCircle.velocity.x);
                 }
             }
             
-            if (abs(center.y - other.y) < distanceBetweenCircles) {
-                //print("vertical collide \n");
-                if (center.y - other.y > 0) {
-                    yDirection = 1;
-                    otherCircle.yDirection = -1;
+            if (abs(location.y - other.y) < distanceBetweenCircles) {
+                if (location.y - other.y > 0) {
+                    velocity.y = abs(velocity.y);
+                    otherCircle.velocity.y = -abs(otherCircle.velocity.y);
                 } else{
-                    yDirection =-  1;
-                    otherCircle.yDirection = 1;
+                    velocity.y = -abs(velocity.y);
+                    otherCircle.velocity.y = abs(otherCircle.velocity.y);
                 }
             }
         }
     }
     
+    void checkBoundaries() {
+        if (location.x + rad * 2 > width || location.x < 0) {
+            velocity.x = -velocity.x;
+        }
+        if (location.y + rad * 2 > height || location.y < 0) {
+            velocity.y = -velocity.y;
+        }
+    }
     
     Circle update() {
         
         for (Circle circle : circles) {
             if (circle != this) {
-                updateDirectionCollideWith(circle);
+                checkCollisionWith(circle);
             }
         }
         
-        if (center.x + rad * 2 > width || center.x < 0) {
-            xDirection = -xDirection;
-        }
-        if (center.y + rad * 2 > height || center.y < 0) {
-            yDirection = -yDirection;
-        }
+        checkBoundaries();
         
         return this;
     }
@@ -89,13 +92,12 @@ class Circle{
         
         // blendMode(SCREEN);
         // shader(bwShader);
+        velocity.add(acceleration);
+        velocity.limit(initialSpeed);
+        location.add(velocity);
         
-        
-        image(ellipse,center.x , center.y,rad * 2,rad * 2);
+        image(ellipse,location.x , location.y,rad * 2,rad * 2);
         // fill(r,g,b);
         
-        
-        center.x += speed * xDirection;
-        center.y += speed * yDirection;
     }
 }

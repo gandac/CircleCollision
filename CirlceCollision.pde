@@ -1,6 +1,7 @@
 Circle circle1;
-int numCircles = 50;
-int initialSpeed = 4;
+
+int numCircles = 30;
+int initialSpeed = 3;
 Circle[] circles = new Circle[numCircles]; // define the array
 PShader bwShader, edgesShader, lightShader;
 PeasyGradients peasyGradients;
@@ -18,9 +19,9 @@ void setup() {
 }
 
 void draw() {
-    bwShader.set("sigma", map(50, 0, 100, 0, 10.0));
-    bwShader.set("blurSize",(int) map(50, 0, 300, 0, 30.0));
-    bwShader.set("texOffset", 1.0, 1.0);
+    bwShader.set("sigma", 3.15);
+    bwShader.set("blurSize",3);
+    // bwShader.set("texOffset", 1.0, 1.0);
     // shader(edgesShader);
     // shader(lightShader);
     

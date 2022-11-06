@@ -24,29 +24,14 @@ class Circle{
         PVector other = otherCircle.location;
         float distanceBetweenCircles = this.rad + otherCircle.rad;   
         boolean isColliding = isColliding(this,otherCircle);
+        PVector distanceVector = PVector.sub(other, location);
+        float distanceVectorMag = distanceVector.mag();
         
         if (isColliding) {
-            // isHorizontalColliding
-            if (abs(location.x - other.x) < distanceBetweenCircles) {
-                //print("horizontal collide \n");
-                if (location.x - other.x > 0) {
-                    velocity.x = abs(velocity.x);
-                    otherCircle.velocity.x = -abs(otherCircle.velocity.x);
-                } else{
-                    velocity.x = -abs(velocity.x);
-                    otherCircle.velocity.x = abs(otherCircle.velocity.x);
-                }
-            }
+            PVector newVelocity = otherCircle.velocity;
+            otherCircle.velocity = velocity;
+            velocity = newVelocity;
             
-            if (abs(location.y - other.y) < distanceBetweenCircles) {
-                if (location.y - other.y > 0) {
-                    velocity.y = abs(velocity.y);
-                    otherCircle.velocity.y = -abs(otherCircle.velocity.y);
-                } else{
-                    velocity.y = -abs(velocity.y);
-                    otherCircle.velocity.y = abs(otherCircle.velocity.y);
-                }
-            }
         }
     }
     

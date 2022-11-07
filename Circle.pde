@@ -27,19 +27,62 @@ class Circle{
         PVector distanceVector = PVector.sub(other, location);
         float distanceVectorMag = distanceVector.mag();
         
-        if (isColliding) {
-            PVector newVelocity = otherCircle.velocity;
-            otherCircle.velocity = velocity;
-            velocity = newVelocity;
+        // is colliding
+        if (distanceVectorMag <  distanceBetweenCircles) {
+            float m = rad * 0.1;
+            float otherM = otherCircle.rad * 0.1;
             
+            float distanceCorrection = (distanceBetweenCircles - distanceVectorMag) / 2.0;
+            PVector d = distanceVector.copy();
+            PVector correctionVector = d.normalize().mult(distanceCorrection);
+            otherCircle.location.add(correctionVector);
+            location.sub(correctionVector);
+            // get angle of distanceVect
+            float angle  = distanceVector.heading();
+            float sinAngle = sin(angle);
+            float cosAngle = cos(angle);
+            
+            PVector[] bTemp = {
+                new PVector(), new PVector()
+                };
+            bTemp[1].x = cosAngle * distanceVector.x + sinAngle * distanceVector.y;
+            bTemp[1].y = cosAngle * distanceVector.y - sinAngle * distanceVector.x;
+            
+            PVector[] vTemp = {
+                new PVector(), new PVector()
+                };
+            
+            // rotate velocities
+            vTemp[0].x  = cosAngle * velocity.x + sinAngle * velocity.y;
+            vTemp[0].y  = cosAngle * velocity.y - sinAngle * velocity.x;
+            vTemp[1].x  = cosAngle * otherCircle.velocity.x + sinAngle * otherCircle.velocity.y;
+            vTemp[1].y  = cosAngle * otherCircle.velocity.y - sinAngle * otherCircle.velocity.x;
+            
+            PVector[] vFinal = {
+                new PVector(), new PVector()
+                };
+            
+            // final rotated velocity for this ball
+            vFinal[0].x = ((m - otherM) * vTemp[0].x + 2 * otherM * vTemp[1].x) / (m + otherM);
+            vFinal[0].y = vTemp[0].y;
+            
+            // final rotated velocity for b[0]
+            vFinal[1].x = ((otherM - m) * vTemp[1].x + 2 * m * vTemp[0].x) / (m + otherM);
+            vFinal[1].y = vTemp[1].y;
+            
+            
+            velocity.x = cosAngle * vFinal[0].x - sinAngle * vFinal[0].y;
+            velocity.y = cosAngle * vFinal[0].y + sinAngle * vFinal[0].x;
+            otherCircle.velocity.x = cosAngle * vFinal[1].x - sinAngle * vFinal[1].y;
+            otherCircle.velocity.y = cosAngle * vFinal[1].y + sinAngle * vFinal[1].x;
         }
     }
     
     void checkBoundaries() {
-        if (location.x + rad * 2 > width || location.x < 0) {
+        if (location.x + rad > width || location.x - rad < 0) {
             velocity.x = -velocity.x;
         }
-        if (location.y + rad * 2 > height || location.y < 0) {
+        if (location.y + rad > height || location.y - rad < 0) {
             velocity.y = -velocity.y;
         }
     }
@@ -81,7 +124,9 @@ class Circle{
         velocity.limit(initialSpeed);
         location.add(velocity);
         
-        image(ellipse,location.x , location.y,rad * 2,rad * 2);
+        // ellipse(location.x,location.y,rad * 2, rad * 2);
+        
+        image(ellipse,location.x - rad, location.y - rad,rad * 2,rad * 2);
         // fill(r,g,b);
         
     }

@@ -6,7 +6,7 @@ boolean isColliding(Circle circle, Circle otherCircle) {
 }
 
 Circle generateRandomCircle(int index, int thisCollidingCount,PeasyGradients p) {
-    int radius = 20;
+    int radius = 20 + floor(random(10));
     
     PVector randomPoint = new PVector(floor(random(width - radius * 2)), floor(random(height - radius * 2)));
     Circle randomCircle = new Circle(randomPoint, radius, p);
